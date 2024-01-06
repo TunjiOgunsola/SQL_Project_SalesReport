@@ -6,30 +6,34 @@
 	Select * 
 	From Recline
 
-	--GALAXY RECLINE MONTHLY SALES TREND
-	Select Month(Date) Month,Size,Sum(Price_naira) Sales 
+	--GALAXY RECLINE MONTHLY SALES TREND.
+	--This shows the June has the highest revenue with revenue of N122.2M, cloesly followed by December and May with 121.3M and 86.8M respectively.	
+	Select Month(Date) Month,Sum(Price) Revenue 
 	From Recline
-		Group by Month(Date),Size
-		order by 1
-
-	Select  DatePart(MONTH,Date) Month,Sum(Price_naira) Sales
+		Group by Month(Date)
+		order by 2 DESC
+-- Option 2
+	Select  DatePart(MONTH,Date) Month,Sum(Price_naira) Revenue
 	From Recline
 		Group by DatePart(MONTH,Date)
 	
 	--SALES BY SIZE
+	-- This depict that 16mm has the highest revenue with a sum of N349.1M from 696 units sold'	
 	Select Coalesce(Convert(nvarchar, Size), 'Subtotal') As Size, Sum(Coils) UnitSold,Sum(Price_Naira) SumPrice
 	From Recline
 		Group by Rollup(Size)
-		ORDER BY 1 Asc
+		ORDER BY 3 Desc
 
 	--RANKING OVERALL RECLINE CUSTOMERS
+	-- This shows that Edwin is the highest rank customer with a total of N153M followed by Ndubuisi with N152M. 	
 	Select Coalesce(Customer_Name, 'SubTotal') Customer_Name, Sum(Coils) Coils,Sum(Price_Naira) SumPrice
 	From Recline
 	Group by Rollup(Customer_Name)
-		ORDER BY 3 ASC
+		ORDER BY 3 DESC
 
 	--RANKING 16MM RECLINE CUSTOMERS
-	Select Customer_Name, Sum(Price_Naira) SumPrice
+	-- Edwin bought the most coils of 16mm (124), followed by Dennis and Ndu-favoured (115) each. 	
+	Select Customer_Name, Sum(Price) SumPrice
 	From Recline
 	Where Size = 16
 	Group by Customer_Name
