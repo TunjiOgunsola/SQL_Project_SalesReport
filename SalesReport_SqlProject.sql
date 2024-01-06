@@ -26,11 +26,13 @@
 
 	--RANKING OVERALL RECLINE CUSTOMERS
 	-- This shows that Edwin is the highest rank customer with a total of N153M followed by Ndubuisi with N152M. 	
-	Select Coalesce(Customer_Name, 'SubTotal') Customer_Name, Sum(Coils) Coils,Sum(Price_Naira) SumPrice
+	Select Coalesce(Customer_Name, 'SubTotal') Customer_Name, Sum(Coils) Coils,Sum(Price) SumPrice
 	From Recline
 	Group by Rollup(Customer_Name)
 		ORDER BY 3 DESC
-
+		
+--The cables come in different sizes, so it is necessary to categorize customers based on the sizes they most frequently purchase
+		
 	--RANKING 16MM RECLINE CUSTOMERS
 	-- Edwin bought the most coils of 16mm (124), followed by Dennis and Ndu-favoured (115) each. 	
 	Select Customer_Name, Sum(Price) SumPrice
@@ -40,14 +42,16 @@
 		ORDER BY 2 DESC
 
 	--RANKING 25MM RECLINE CUSTOMERS
-	Select Customer_Name, Sum(Price_Naira) SumPrice
+	-- At the top is Dennis, who ordered 56 coils; following him is Chimaco with 41 coils, and then Sobitec with 34 coils.	
+	Select Customer_Name, Sum(Coils) as Units,Sum(Price) SumPrice
 	From Recline
 	Where Size = 25
 	Group by Customer_Name
 		ORDER BY 2 DESC
 
 	--RANKING 35MM RECLINE CUSTOMERS
-	Select Customer_Name, Sum(Price_Naira) SumPrice
+	-- Ndufdavoured ordered 72 coils, closely followed by Edwin with 70 coils and Sobitec with 42 coils.	
+	Select Customer_Name, Sum(Coils) as Units,Sum(Price) SumPrice
 	From Recline
 	Where Size = 35
 	Group by Customer_Name
@@ -55,21 +59,24 @@
 
 	
 	--RANKING 50MM RECLINE CUSTOMERS
-	Select Customer_Name, Sum(Price_Naira) SumPrice
+	--Edwin ordered 17 coils, closely followed by Ndufdavoured and Sobitec with 14 and 13 coils respectively.	
+	Select Customer_Name, Sum(Coils) as Units, Sum(Price) SumPrice
 	From Recline
 	Where Size = 50
 	Group by Customer_Name
 		ORDER BY 2 DESC
 
 	--RANKING 70MM RECLINE CUSTOMERS
-	Select Customer_Name, Sum(Price_Naira) SumPrice
+	-- Ndufdavoured ordered 21 coils,  followed by Edwin with 17 coils and Sobitec in distant third with 5 coils.	
+	Select Customer_Name, Sum(Coils) as Units, Sum(Price) SumPrice
 	From Recline
 	Where Size = 70
 	Group by Customer_Name
 		ORDER BY 2 DESC
 
 	--SALES BY LOCATION
-	Select Location, Sum(Price_Naira) SumPrice
+	-- Alaba has the highest reclines sales with 758.6M, followed  by Ipaja and Idumota with 34M and 33M respectively. 	
+	Select Location, Sum(Coils) as Units, Sum(Price) SumPrice
 	From Recline
 	Group by Location
 		ORDER BY 2 DESC
