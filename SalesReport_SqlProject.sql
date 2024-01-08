@@ -89,13 +89,13 @@
 	From Copper
 
 	--Sum of Copper Annual Sales 
-	-- The total revenue genrated from copper is N586.1M	
+	-- The total revenue genrated from copper is N586.1M for the year 2022.	
 	Select  DatePart(YEAR,Date) Year,Sum(Price) Revenue
 	From Copper
 	Group by YEAR(Date)
 
 	--COPPER MONTHLY SALES
-	-- February has the highest sales with 	
+	-- February has the highest sales with N131.7M followed by January and June with N95.9M and N77.2M respectively. 	
 	Select (Month(Date)) Month,Sum(Price) Revenue
 	From Copper
 		Group by  (Month(Date))
@@ -109,27 +109,39 @@
 	
 	
 	--SHOWING SALES BY SIZE IN SUM TOTAL AND PERCENTAGE
-	Select Coalesce(Convert(nvarchar (255),Size), 'Subtotal') Size, Sum (Drum) Drum,Sum(Price_Naira) SumPrice,
-		Sum(Price_Naira) / 586108350 * 100 AS TotalSalesPercentage
+	Select Coalesce(Convert(nvarchar (255),Size), 'Subtotal') Size, Sum (Drum) Drum,Sum(Price) SumPrice,
+		Sum(Price) * 1.0 / 586108350 * 100 AS TotalSalesPercentage
 	From Copper
 		Group by Rollup(Size)
 		ORDER BY 3 ASC
-
+--Using CTE 
+With PerCTE
+ (Size, Drum, SumPrice) AS
+( Select Coalesce(Convert(nvarchar (255),Size), 'Subtotal') Size, Sum (Drum) Drum,Sum(Price) SumPrice
+	From Copper
+		Group by Rollup(Size))
+		
+	Select *,  SumPrice * 1.0 / 586108350 * 100
+	From PerCTE
+		
 	--RANKING OVERALL COPPER CUSTOMERS
-	Select Customer_Name, Sum(Drum) Drums,Sum(Price_Naira) SumPrice
+-- Ambrose top the list with 25 drums followed by MC Global with 21 drums and Richard in third with 15 drums.
+	Select Customer_Name, Sum(Drum) Drums,Sum(Price) SumPrice
 	From Copper
 	Group by Rollup(Customer_Name)
 		ORDER BY 3 DESC
 
 	-- REVENUE BY COPPER BRAND
-	Select Coalesce(BRAND, 'SubTotal'), Sum(Drum) Drums,Sum(Price_Naira) SumPrice,
-		Sum(Price_Naira) / 586108350 * 100 AS TotalSalesPercentage
+-- Afrigold generated about 58% of of the total revenue followed by Marino with 26% and Deltasil with 16%. 		
+	Select Coalesce(BRAND, 'SubTotal'), Sum(Drum) Drums,Sum(Price) SumPrice,
+		Sum(Price) * 1.0 / 586108350 * 100 AS TotalSalesPercentage
 	From Copper
 	Group by Rollup(BRAND)
 		ORDER BY 3 ASC
 
 
 	--SALES BY LOCATION
+--Over 32% of the copper cables was sold at Lagos Island, followed by Alaba with 30% while Kano, Port Harcourt, Abuja, and Ipaja shared 28%.		
 	Select Coalesce(Location, 'SubTotal') Location, Sum(Price_Naira) SumPrice, 
 	Sum(Price_Naira) / 586108350 * 100 AS TotalSalesPercentage
 	From Copper
@@ -138,21 +150,24 @@
 ----------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------
 -- OVERALL RANKING CUSTOMERS FOR COPPER AND RECLINE 2022
-
+-- Edwin top the ranking with N161.3M, Ndufavoured N152.3M followed by Sobitec with N126.0M.
 	SELECT
     Customer_name, 
-    SUM(Price_Naira) AS Total_Price_Naira
+    SUM(Price) AS Total_Price
 FROM
-    (SELECT customer_name, Price_Naira FROM Recline
+    (SELECT customer_name, Price FROM Recline
         UNION ALL
-        SELECT customer_name, Price_Naira FROM Copper
+        SELECT customer_name, Price FROM Copper
     ) CombinedTable
 Group By rollup
     (customer_name)
-	Order by 2 
+	Order by 2 DESC
 
---While trying to show the sales by location, I noticed that one location was given tow different names "Idumota" and "Lagos Island" in  
-  --Copper TableSo I merged them together and chose "Idumota" as the name.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+P.S --While trying to show the sales by location, I noticed that one location was given two different names "Idumota" and "Lagos Island" in  
+  --  Copper Table So I merged them together and chose "Idumota" as the name.
 
 	Select Location,
 	Case 
@@ -168,10 +183,10 @@ Update Copper
 			End 
 			From Copper
 
-
+-- GROSS RANKING LOCATION FOR RECLINE AND COPPER
 SELECT
     Coalesce(Location, 'SubTotal') Location,
-    SUM(Price_Naira) AS Total_Price_Naira
+    SUM(Price_Naira) AS Total_Price
 FROM
     (SELECT Location, Price_Naira FROM Recline
         UNION ALL
@@ -181,15 +196,16 @@ Group By Rollup
     (Location)
 	Order by 1 
 
-
-	SELECT
-    Month(Date) Month,SUM(Price_Naira) AS Total_Price_Naira
+-- GROSS RANKING BY MONTH FOR RECLINE AND COPPER
+SELECT
+    Month(Date) Month,SUM(Price) AS Total_Price
 FROM
-    (SELECT Date, Price_Naira FROM Recline
+    (SELECT Date, Price FROM Recline
         UNION ALL
-        SELECT Date, Price_Naira FROM Copper
+        SELECT Date, Price FROM Copper
     ) CombinedTable
 Group By Rollup
    (Month(Date))
 	Order by 1 
+
 
