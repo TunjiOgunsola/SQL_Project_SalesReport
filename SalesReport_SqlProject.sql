@@ -75,7 +75,7 @@
 		ORDER BY 2 DESC
 
 	--SALES BY LOCATION
-	-- Alaba has the highest reclines sales with 758.6M, followed  by Ipaja and Idumota with 34M and 33M respectively. 	
+	-- Alaba market has the highest reclines sales with 758.6M, followed by Ipaja and Idumota with 34M and 33M respectively. 	
 	Select Location, Sum(Coils) as Units, Sum(Price) SumPrice
 	From Recline
 	Group by Location
@@ -88,12 +88,18 @@
 	Select * 
 	From Copper
 
-	--COPPER MONTHLY SALES 
-
 	--Sum of Copper Annual Sales 
-	Select  DatePart(YEAR,Date) Month,Sum(Price_naira) Sales
+	-- The total revenue genrated from copper is N586.1M	
+	Select  DatePart(YEAR,Date) Year,Sum(Price) Revenue
 	From Copper
 	Group by YEAR(Date)
+
+	--COPPER MONTHLY SALES
+	-- February has the highest sales with 	
+	Select (Month(Date)) Month,Sum(Price) Revenue
+	From Copper
+		Group by  (Month(Date))
+		order by 2 DESC	
 
 	--Breakdown of units sold per sizes monthly
 	Select Month(Date) Month, Size,Sum(Drum)  UnitSold,Sum(Price_naira) Price 
